@@ -29,12 +29,12 @@ public class AssertThrows {
     }
 
     /**
-     *
-     * @param expected
-     * @param executable
-     * @param message
-     * @param <T>
-     * @return
+     * Null safe assertThrows and assertDoesNotThrow..
+     * @param expected Expected exception type. +null+ if no exception should be thrown.
+     * @param executable Procedure to assert thrown exception.
+     * @param message Message for test case.
+     * @param <T> Type of exception to be expected.
+     * @return Exception thrown in assertion process.
      */
     @SuppressWarnings("unchecked")
     public static <T extends Throwable> T assertThrowsOrNot(final T expected, final Executable executable, final String message) {
@@ -46,12 +46,12 @@ public class AssertThrows {
     }
 
     /**
-     *
-     * @param expected
-     * @param executable
-     * @param messageSupplier
-     * @param <T>
-     * @return
+     * Null safe assertThrows and assertDoesNotThrow..
+     * @param expected Expected exception type. +null+ if no exception should be thrown.
+     * @param executable Procedure to assert thrown exception.
+     * @param messageSupplier Message supplier for test case.
+     * @param <T> Type of exception to be expected.
+     * @return Exception thrown in assertion process.
      */
     @SuppressWarnings("unchecked")
     public static <T extends Throwable> T assertThrowsOrNot(final T expected, final Executable executable,
