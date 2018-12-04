@@ -14,7 +14,6 @@ import net.sf.ehcache.CacheManager;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -23,7 +22,6 @@ import org.springframework.core.io.FileSystemResource;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.time.ZoneOffset;
@@ -31,6 +29,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.*;
 
 
@@ -56,17 +55,17 @@ public class CRLDistributionPointRevocationCheckerTests extends AbstractCRLRevoc
         final String crlFile,
         final GeneralSecurityException expected) {
 
-
-        val file = new File(System.getProperty("java.io.tmpdir"), "ca.crl");
-        try {
+        assertDoesNotThrow(() -> {
+            val file = new File(System.getProperty("java.io.tmpdir"), "ca.crl");
             val out = new FileOutputStream(file);
             IOUtils.copy(new ClassPathResource(crlFile).getInputStream(), out);
-        } catch (IOException e) {
-            throw new AssertionError(e);
-        }
 
-        this.webServer = new MockWebServer(8085, new FileSystemResource(file), "text/plain");
-        LOGGER.debug("Web server listening on port 8085 serving file [{}]", crlFile);
+            this.webServer = new MockWebServer(8085, new FileSystemResource(file), "text/plain");
+
+            this.webServer.start();
+            LOGGER.debug("Web server listening on port 8085 serving file [{}]", crlFile);
+            Thread.sleep(500);
+        });
 
         super.checkCertificate(checker, certFiles, expected);
     }
@@ -177,17 +176,6 @@ public class CRLDistributionPointRevocationCheckerTests extends AbstractCRLRevoc
         if (file.exists()) {
             file.delete();
         }
-    }
-
-    /**
-     * Called once before every test.
-     *
-     * @throws Exception On setup errors.
-     */
-    @BeforeEach
-    public void initialize() throws Exception {
-        this.webServer.start();
-        Thread.sleep(500);
     }
 
     /**
